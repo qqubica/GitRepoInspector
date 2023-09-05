@@ -8,9 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
-import reactor.core.publisher.Mono;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
 
 @Service
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
@@ -23,7 +21,7 @@ public class GitHubApiService {
         this.webClient = webClient;
     }
 
-    public Mono<List<GitRepository>> listSelectedRepositories(String username, String acceptHeader) {
+    public Flux<GitRepository> listSelectedRepositories(String username, String acceptHeader) {
         if (acceptHeader.equals("application/xml")) {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "accept: application/xml header is not supported");
         }
@@ -47,8 +45,7 @@ public class GitHubApiService {
                                 .map(branch -> {
                                     repo.setBranches(branch);
                                     return repo;
-                                }))
-                .collectList();
+                                }));
     }
 
 }
